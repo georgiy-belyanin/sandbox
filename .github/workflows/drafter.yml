@@ -1,0 +1,26 @@
+name: Main
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - id: vars
+        run: |
+          CHGLOG=CHANGELOG.md;
+          X=$(grep -n "^## \[[0-9]" $CHGLOG | cut -f1 -d: | head -1);
+          Y=$(grep -n "^## \[[0-9]" $CHGLOG | cut -f1 -d: | head -2 | tail -1);
+          awk -v x=$X -v y=$Y 'NR > x && NR < y' $CHGLOG > changelog-latest.md;
+          echo "artifact=$(find * -iname '*-latest.md' | xargs)" >> "$GITHUB_OUTPUT"
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: changelog-latest.md
+          draft: true
+          files: ${{ steps.vars.outputs.artifact }}

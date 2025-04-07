@@ -55,8 +55,8 @@ jobs:
             const permission = response.data.permission
 
             if (yourPermIdx < requiredPermIdx) {
-              core.setFailed(`User ${context.actor} doesn't have enough ' +
-                'permissions to backport`)
+              core.setFailed(`User ${context.actor} doesn't have enough ` +
+                `permissions to backport`)
               return
             }
 
